@@ -1,4 +1,13 @@
 
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
+
+
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.datastore.KeyFactory;
+import com.google.cloud.datastore.Entity;
+import com.google.cloud.datastore.FullEntity;
 
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
@@ -20,6 +29,16 @@ public class FormHandlerServlet extends HttpServlet {
 
     // Write the value to the response so the user can see it.
     response.getWriter().println("Thank You!! I will email you ASAP:)) ");
+
+    String title = Jsoup.clean(request.getParameter("title"), Safelist.none());
+    Datastore datastore = DatastoreOptions.getDefaultInstance().getService();
+    KeyFactory keyFactory = datastore.newKeyFactory().setKind("Task");
+    FullEntity taskEntity =
+      Entity.newBuilder(keyFactory.newKey())
+            .build();
+  
+    datastore.put(taskEntity);
+
 
     response.sendRedirect("https://qzhu-sps-summer22.appspot.com/");
     
